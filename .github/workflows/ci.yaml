@@ -1,0 +1,81 @@
+---
+# yamllint disable rule:line-length
+
+name: CI Pipeline
+on:
+  push:
+    branches:
+      - 'feature/**'
+  pull_request:
+
+jobs:
+  Black-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+
+      - name: Install and run Black
+        run: |
+          pip3 install black
+          black --check --verbose .
+
+  Pylint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+
+      - name: Install and run Pylint
+        run: |
+          pip3 install pylint
+          pylint --disable=E0401 --fail-under=9  $(find  . -maxdepth 2 -name "*__init__.py" | cut -d'/' -f 2)
+
+  Flake8:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+
+      - name: Install and run Flak8
+        run: |
+          pip3 install flake8
+          flake8 --ignore=E501 --verbose .
+
+  PyLama:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+
+      - name: Install and run Pylama
+        run: |
+          pip3 install pylama
+          pylama -l mccabe,pycodestyle,pyflakes  --ignore=E501 --verbose .
+
+  Radon:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+
+      - name: Install and run Radon
+        run: |
+          pip install radon
+          radon cc . --total-average
+          radon cc . --total-average | grep -o "Average complexity.* A"
