@@ -1,3 +1,5 @@
+[![CI Pipeline](https://github.com/jad617/vault-actions/actions/workflows/ci.yaml/badge.svg)](https://github.com/jad617/vault-actions/actions/workflows/ci.yaml)
+
 # vault-actions - command line for running actions on Vault
 
 ```shell
