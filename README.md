@@ -1,6 +1,6 @@
-[![CI Pipeline](https://github.com/jad617/vault-actions/actions/workflows/ci.yaml/badge.svg)](https://github.com/jad617/vault-actions/actions/workflows/ci.yaml)
-
 # vault-actions - command line for running actions on Vault
+
+[![Pipeline CI](https://github.com/OpsInc/vault-actions/actions/workflows/python-CI.yaml/badge.svg)](https://github.com/OpsInc/vault-actions/actions/workflows/python-CI.yaml)
 
 ```shell
 ❯ vault-actions.py --help
