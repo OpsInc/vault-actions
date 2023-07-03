@@ -1,5 +1,5 @@
 ---
-# yamllint disable rule:line-length
+# yamllint disable rule:line-length rule:truthy
 
 name: Post merge CI
 
@@ -9,53 +9,6 @@ on:
       - closed
 
 jobs:
-  post_merge:
+  git-post-merge:
     if: github.event.pull_request.merged == true
-    runs-on: ubuntu-latest
-    name: Post merge action
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Setup Git config
-        run: |
-          git config --local --add safe.directory $GITHUB_WORKSPACE
-
-      - name: Create latest tag
-        id: create_tag
-        run: |
-          git fetch --unshallow --tags
-          VERSION=$(cat VERSION)
-          LATEST_TAG=$(cat VERSION | tr -d 'v.')
-          CURRENT_TAG=$(git tag --list| tail -n1| tr -d 'v.')
-          if [[ $LATEST_TAG -gt $CURRENT_TAG ]]
-          then
-            git tag $VERSION
-            git push --tags
-            echo "tag_version=$VERSION" >> $GITHUB_OUTPUT
-            echo "release=true" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Fetch git commit info
-        if: ${{ steps.create_tag.outputs.release == 'true' }}
-        id: git_info
-        run: |
-          GIT_SUBJECT=$(git log -1 --pretty=format:"%s")
-          GIT_BODY=$(git log -1 --format=%b HEAD | grep "\S")
-          echo "git_subject=$GIT_SUBJECT" >> $GITHUB_OUTPUT
-          # This hack is required to add a multiline output to GITHUB_OUTPUT
-          echo "git_body<<EOF" >> $GITHUB_OUTPUT
-          echo $GIT_BODY >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-
-      - name: Create Release
-        if: ${{ steps.create_tag.outputs.release == 'true' }}
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ steps.create_tag.outputs.tag_version }}
-          release_name: "${{ steps.create_tag.outputs.tag_version }}: ${{ steps.git_info.outputs.git_subject }}"
-          body: ${{ steps.git_info.outputs.git_body }}
+    uses: OpsInc/workflow-lib/.github/workflows/git-tag-release.yml@main

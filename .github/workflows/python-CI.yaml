@@ -1,0 +1,17 @@
+---
+# yamllint disable rule:line-length rule:truthy
+
+name: Pipeline CI
+on:
+  push:
+    branches:
+      - 'feature/**'
+  pull_request:
+    branches: main
+
+jobs:
+  git-version-gating:
+    uses: OpsInc/workflow-lib/.github/workflows/git-version-gating.yml@main
+
+  python-CI:
+    uses: OpsInc/workflow-lib/.github/workflows/python-CI.yml@main
